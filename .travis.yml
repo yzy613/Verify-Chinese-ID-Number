@@ -5,4 +5,3 @@ go:
   - master
 os:
   - linux
-  - windows
