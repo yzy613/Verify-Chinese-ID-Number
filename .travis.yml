@@ -20,6 +20,7 @@ deploy:
   provider: releases
   token:
     secure: ${TOKEN}
+  # 官方说要把 skip_cleanup 替换成 cleanup
   skip_cleanup: true
   cleanup: false
   file:
