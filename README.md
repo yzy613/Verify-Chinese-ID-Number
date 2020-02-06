@@ -1,5 +1,6 @@
 # Verify-Chinese-ID-Number
 Verify that your Chinese ID number is correct.
 
-[](https://travis-ci.org/yzy613/Verify-Chinese-ID-Number.svg?branch=master)
+![](https://travis-ci.org/yzy613/Verify-Chinese-ID-Number.svg?branch=master)
+
 [README](https://github.com/yzy613/Verify-Chinese-ID-Number/blob/master/README.md)|[中文文档](https://github.com/yzy613/Verify-Chinese-ID-Number/blob/master/README_zh.md)
