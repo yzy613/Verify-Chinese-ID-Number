@@ -6,7 +6,7 @@
 Verify that the Chinese ID number is correct. The program is written in Go and supports running with parameters.
 The last digit of the ID number is verified by MOD11-2. This procedure is the same.
 
-## usage:
+## Usage:
 
     1. Run directly
 
