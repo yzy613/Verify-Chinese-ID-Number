@@ -20,7 +20,9 @@ deploy:
   provider: releases
   token:
     secure: ${TOKEN}
-  cleanup: false
+  # 官方推荐？
+  #cleanup: false
+  skip_cleanup: true
   file:
     - linux_amd64.tar.gz
     - windows_amd64.tar.gz
