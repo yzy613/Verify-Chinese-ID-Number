@@ -12,7 +12,7 @@ os:
 
 # 发布前触发
 before_deploy:
-  - chmod -x ./build.sh && ./build.sh
+  - chmod +x ./build.sh && ./build.sh
 
 # 发布触发
 deploy:
