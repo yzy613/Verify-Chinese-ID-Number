@@ -3,5 +3,26 @@ language: go
 go:
   - 1.13.x
   - master
+
 os:
   - linux
+  
+# 每次Git提交后触发
+#script:
+
+# 发布前触发
+before_deploy:
+  - chmod -x ./build.sh && ./build.sh
+
+# 发布触发
+deploy:
+  provider: releases
+  api_key:
+    secure: ${TOKEN}
+  skip_cleanup: true
+  file:
+    - linux_amd64.tar.gz
+    - windows_amd64.tar.gz
+  on:
+    tags: true
+    all_branches: true
