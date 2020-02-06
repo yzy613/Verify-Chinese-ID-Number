@@ -17,9 +17,9 @@ before_deploy:
 # 发布触发
 deploy:
   provider: releases
-  api_key:
+  token:
     secure: ${TOKEN}
-  skip_cleanup: true
+  cleanup: false
   file:
     - linux_amd64.tar.gz
     - windows_amd64.tar.gz
