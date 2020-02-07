@@ -75,6 +75,54 @@ func getNumber() (personalID ID, err error) {
 	return
 }
 
+func checkNumber(in [17]uint64) (s uint64, err error) {
+	year := in[6]*1000 + in[7]*100 + in[8]*10 + in[9]
+	mon := in[10]*10 + in[11]
+	day := in[12]*10 + in[13]
+	breakEnable := false
+	switch {
+	case day == 0:
+		breakEnable = true
+	case mon == 1 || mon == 3 || mon == 5 || mon == 7 || mon == 8 || mon == 10 || mon == 12:
+		if day > 31 {
+			breakEnable = true
+		}
+	case mon == 4 || mon == 6 || mon == 9 || mon == 11:
+		if day > 30 {
+			breakEnable = true
+		}
+	case mon == 2:
+		if year%4 == 0 {
+			if year%100 == 0 && year%400 != 0 {
+				if day > 28 {
+					breakEnable = true
+				}
+			} else {
+				if day > 29 {
+					breakEnable = true
+				}
+			}
+		} else {
+			if day > 28 {
+				breakEnable = true
+			}
+		}
+	default:
+		breakEnable = true
+	}
+	if breakEnable == true {
+		err = errors.New("日期输入有问题，你确定这是地球日期？")
+		return
+	}
+	weight := [17]uint64{7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2}
+	s = 0
+	for i := 0; i < 17; i++ {
+		s += in[i] * weight[i]
+	}
+	s = (12 - (s % 11)) % 11
+	return
+}
+
 func output(personalID ID) {
 	if personalID.Correct != true {
 		fmt.Println("此身份证号码未能通过校验")
@@ -91,51 +139,13 @@ func output(personalID ID) {
 	fmt.Println("此身份证号码通过了校验")
 }
 
-func checkNumber(in [17]uint64, src uint64) (s uint64, err error) {
-	year := in[6]*1000 + in[7]*100 + in[8]*10 + in[9]
-	mon := in[10]*10 + in[11]
-	day := in[12]*10 + in[13]
-	switch {
-	case mon == 1 || mon == 3 || mon == 5 || mon == 7 || mon == 8 || mon == 10 || mon == 12:
-		if day > 31 {
-			err = errors.New("日期输入有问题，你确定这是地球日期？")
-		}
-	case mon == 4 || mon == 6 || mon == 9 || mon == 11:
-		if day > 30 {
-			err = errors.New("日期输入有问题，你确定这是地球日期？")
-		}
-	case mon == 2:
-		if year%400 == 0 {
-			if day > 29 {
-				err = errors.New("日期输入有问题，你确定这是地球日期？")
-			}
-		} else {
-			if day > 28 {
-				err = errors.New("日期输入有问题，你确定这是地球日期？")
-			}
-		}
-	default:
-		err = errors.New("日期输入有问题，你确定这是地球日期？")
-	}
-	if err != nil {
-		return
-	}
-	weight := [17]uint64{7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2}
-	s = 0
-	for i := 0; i < 17; i++ {
-		s += in[i] * weight[i]
-	}
-	s = (12 - (s % 11)) % 11
-	return
-}
-
 func main() {
 	personalID, err := getNumber()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	ans, err := checkNumber(personalID.EachNum, personalID.VerificationCode)
+	ans, err := checkNumber(personalID.EachNum)
 	if err != nil {
 		fmt.Println(err)
 		return
