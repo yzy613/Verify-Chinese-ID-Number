@@ -57,7 +57,7 @@ func getNumber() (personalID ID, err error) {
 	for i := 0; i < 17; i++ {
 		personalID.EachNum[i] = string2uint64(idNum[i : i+1])
 	}
-	areaFile, err := os.Open("./area_code.json")
+	areaFile, err := os.Open("./conf/area_code.json")
 	defer areaFile.Close()
 	if err != nil {
 		fmt.Println(err)
