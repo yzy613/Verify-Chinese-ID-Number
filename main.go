@@ -5,8 +5,10 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"os"
+	"io/ioutil"
+	"net/http"
 	"strconv"
+	"verify-chinese-ID-number/mod11_2"
 )
 
 type ID struct {
@@ -28,9 +30,9 @@ func string2uint64(str string) (ret uint64) {
 		ret = 10
 		return
 	}
-	ret, err := strconv.ParseUint(str, 10, 0)
-	if err != nil {
-		fmt.Println(err)
+	ret, getErr := strconv.ParseUint(str, 10, 0)
+	if getErr != nil {
+		fmt.Println(getErr)
 	}
 	return
 }
@@ -57,16 +59,14 @@ func getNumber() (personalID ID, err error) {
 	for i := 0; i < 17; i++ {
 		personalID.EachNum[i] = string2uint64(idNum[i : i+1])
 	}
-	areaFile, err := os.Open("./conf/area_code.json")
-	defer areaFile.Close()
-	if err != nil {
-		fmt.Println(err)
+	areaContent, getErr := ioutil.ReadFile("./conf/area_code.json")
+	if getErr != nil {
+		fmt.Println(getErr)
 	}
-	areaJson := json.NewDecoder(areaFile)
 	area := map[uint64]string{}
-	err = areaJson.Decode(&area)
-	if err != nil {
-		fmt.Println(err)
+	getErr = json.Unmarshal(areaContent, &area)
+	if getErr != nil {
+		fmt.Println(getErr)
 	}
 	personalID.Area = area[personalID.EachNum[0]*100000+personalID.EachNum[1]*10000]
 	if personalID.Area == "" {
@@ -114,12 +114,10 @@ func checkNumber(in [17]uint64) (s uint64, err error) {
 		err = errors.New("日期输入有问题，你确定这是地球日期？")
 		return
 	}
-	weight := [17]uint64{7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2}
-	s = 0
-	for i := 0; i < 17; i++ {
-		s += in[i] * weight[i]
+	s, getErr := mod11_2.CalculateVerificationCode(in[0:17], mod11_2.CalculateWeight(18))
+	if getErr != nil {
+		fmt.Println(getErr)
 	}
-	s = (12 - (s % 11)) % 11
 	return
 }
 
@@ -139,15 +137,20 @@ func output(personalID ID) {
 	fmt.Println("此身份证号码通过了校验")
 }
 
+func handleGet(writer http.ResponseWriter, request *http.Request) {
+	// 还没做完处理get请求
+}
+
 func main() {
-	personalID, err := getNumber()
-	if err != nil {
-		fmt.Println(err)
+	//http.HandleFunc("/", handleGet)
+	personalID, getErr := getNumber()
+	if getErr != nil {
+		fmt.Println(getErr)
 		return
 	}
-	ans, err := checkNumber(personalID.EachNum)
-	if err != nil {
-		fmt.Println(err)
+	ans, getErr := checkNumber(personalID.EachNum)
+	if getErr != nil {
+		fmt.Println(getErr)
 		return
 	}
 	if ans == personalID.VerificationCode {
